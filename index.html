@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="تطبيق خاص للوصول إلى hochu.tv">
+  <link rel="manifest" href="manifest.json">
+  <title>hochu.tv</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;background:#111;color:#fff;font-family:Arial,sans-serif}
+    .app{height:100%;display:flex;flex-direction:column}
+    header{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#181818}
+    header b{font-size:20px}
+    button{border:0;border-radius:10px;padding:10px 14px;background:#333;color:#fff;font-size:14px}
+    main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+    .logo{font-size:42px;font-weight:700;margin-bottom:12px}
+    p{color:#bbb;line-height:1.6;max-width:420px}
+    .open{background:#fff;color:#111;font-size:17px;padding:13px 24px;border-radius:12px;margin-top:10px}
+    small{color:#777;margin-top:20px}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <b>hochu.tv</b>
+    <button id="install" hidden>تثبيت</button>
+  </header>
+  <main>
+    <div class="logo">hochu.tv</div>
+    <p>واجهة خاصة وسهلة للوصول إلى الموقع من هاتفك.</p>
+    <button class="open" onclick="openSite()">فتح الموقع</button>
+    <small>يمكنك إضافة الصفحة إلى الشاشة الرئيسية من متصفح الهاتف.</small>
+  </main>
+</div>
+
+<script>
+  const SITE = "https://hochu.tv/";
+  function openSite(){ window.location.href = SITE; }
+
+  let deferredPrompt;
+  window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const btn = document.getElementById("install");
+    btn.hidden = false;
+    btn.onclick = async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      btn.hidden = true;
+    };
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+  }
+</script>
+</body>
+</html>
